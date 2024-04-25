@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-#testing program for lidar read testing
+#testing program for lidar read testing by Teacher S
 
 import rclpy
 from std_msgs.msg import String
