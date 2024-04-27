@@ -1,0 +1,114 @@
+#By Teacher S, S Adademy
+
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
+import cv2
+import numpy as np
+from rclpy.qos import QoSProfile, QoSDurabilityPolicy
+from rclpy.qos import qos_profile_sensor_data
+from geometry_msgs.msg import Twist
+import time
+from std_msgs.msg import String
+
+class YellowBallFollower(Node):
+    def __init__(self):
+        super().__init__('yellow_ball_check')
+        self.color_pub = self.create_publisher(String, 'color', 10)
+
+        self.subscription = self.create_subscription(
+            Image,
+            '/image',   #image_raw
+            self.image_callback,
+            qos_profile_sensor_data  #10
+        )
+        self.subscription  # prevent unused variable warning
+        self.cv_bridge = CvBridge()
+        self.count = 0
+
+
+    def image_callback(self, msg):
+        move = False
+        try:
+            # Convert ROS Image message to OpenCV image
+            cv_image = self.cv_bridge.imgmsg_to_cv2(msg, "bgr8")
+        except Exception as e:
+            self.get_logger().error(f"Error converting image: {e}")
+            return
+
+        # Convert BGR to HSV
+        hsv_image = cv2.cvtColor(cv_image, cv2.COLOR_BGR2HSV)
+
+        # Define range for red color in HSV
+        #lower_red = np.array([0, 100, 100])
+        #upper_red = np.array([10, 255, 255])
+        lower_yellow = np.array([20, 100, 100])
+        upper_yellow = np.array([30, 255, 255])
+
+        # Threshold the HSV image to get only red colors
+        mask = cv2.inRange(hsv_image, lower_yellow, upper_yellow)
+
+        # Find contours in the mask
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # Check if any contours are found
+        if len(contours) > 0:
+            # Find the largest contour
+            largest_contour = max(contours, key=cv2.contourArea)
+
+            # Get the centroid of the largest contour
+            M = cv2.moments(largest_contour)
+            if M["m00"] != 0:
+                cx = int(M["m10"] / M["m00"])
+                cy = int(M["m01"] / M["m00"])
+
+                # Draw a circle at the centroid of the largest contour
+                cv2.circle(cv_image, (cx, cy), 10, (0, 255, 0), -1)
+                print(" ", cx, " ", cy)
+                msg = String()
+
+                if cx < 70:
+                    print("LEFT")
+                    move = True
+                    msg.data = "left"
+                    self.color_pub.publish(msg)
+                elif cx > 250:
+                    print("RIGHT")
+                    move = True
+                    msg.data = "right"
+                    self.color_pub.publish(msg)
+                else:
+                    print("GO!!!")
+                    msg.data = "go"
+                    self.color_pub.publish(msg)
+
+        # Display the image
+        if move == False:
+            msg2 = String()
+            msg2.data = "stop"
+            self.color_pub.publish(msg2)
+
+            '''
+            self.count += 1
+            #if self.count > 10:
+               print("STOP")
+               self.count = 0
+               self.stop()
+            '''
+
+        cv2.imshow('yellow Ball Follower', cv_image)
+        cv2.waitKey(1)
+
+def main(args=None):
+    rclpy.init(args=args)
+
+    yellow_ball_follower = YellowBallFollower()
+
+    rclpy.spin(yellow_ball_follower)
+
+    yellow_ball_follower.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
