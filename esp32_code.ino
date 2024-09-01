@@ -207,11 +207,11 @@ void setup() {
    */
   state = WAITING_AGENT;
 
-   attachInterrupt(15, ISR1, FALLING);  //L_A  forward
-   attachInterrupt(17, ISR2, FALLING);  //L_B  back    
+   attachInterrupt(2, ISR1, FALLING);  //L_A  forward
+   attachInterrupt(5, ISR2, FALLING);  //L_B  back    
    
-   attachInterrupt(16, ISR3, FALLING);  //R_B  forward
-   attachInterrupt(18, ISR4, FALLING);  //R_A   back
+   attachInterrupt(4, ISR3, FALLING);  //R_B  forward
+   attachInterrupt(6, ISR4, FALLING);  //R_A   back
 }
 
 
