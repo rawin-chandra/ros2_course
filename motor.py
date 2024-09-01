@@ -26,7 +26,7 @@ class Motor(Node):
             self.motor_callback,
             10)
         self.subscription
-        self.wheel_width = 0.24       #width of robot
+        self.wheel_width = 0.24       #width of robot, change to your robot
         self.left_vel = 0
         self.right_vel = 0
         self.real_left_vel = 0
