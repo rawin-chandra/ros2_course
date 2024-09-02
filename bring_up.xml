@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="motor_control" exec="motor_control_node" />
+  <node pkg="robot_odom" exec="odom" />  
+</launch>
