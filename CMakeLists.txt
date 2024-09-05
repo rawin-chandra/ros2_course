@@ -19,7 +19,7 @@ find_package(tf2_geometry_msgs REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-add_executable(odom src/odom_mecanum.cpp)
+add_executable(odom src/odom.cpp)
 ament_target_dependencies(odom rclcpp std_msgs nav_msgs tf2 geometry_msgs tf2_ros tf2_geometry_msgs)
 
 install(TARGETS
