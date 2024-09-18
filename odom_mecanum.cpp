@@ -1,3 +1,10 @@
+'''
+odometry for mechanum robot
+by T.S 
+S Academy
+
+'''
+
 #include <functional>
 #include <memory>
 #include <sstream>
