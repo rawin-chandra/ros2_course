@@ -1,3 +1,10 @@
+'''
+motor control for mechanum robot
+by T.S 
+S Academy
+
+'''
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
